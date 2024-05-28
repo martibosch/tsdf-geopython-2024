@@ -1,6 +1,9 @@
-______________________________________________________________________
-
-## title: TSDF - Data storage for scalable processing of heterogeneous and geospatial time series author: Martí Bosch (CEAT); Gionata Ghiggi (LTE); Son Pham-Ba and Charlotte Weil (ENAC-IT4R) date: May 28, 2024. <br /> *Funded by the ETH Domain Open Research Data (ORD) Program* theme: black
+---
+title: TSDF - Data storage for scalable processing of heterogeneous and geospatial time series
+author: Martí Bosch (CEAT); Gionata Ghiggi (LTE); Son Pham-Ba and Charlotte Weil (ENAC-IT4R)
+date: May 28, 2024. <br /> *Funded by the ETH Domain Open Research Data (ORD) Program*
+theme: black
+---
 
 # Motivation: dealing with (spatial) Time series data
 
@@ -8,9 +11,8 @@ ______________________________________________________________________
 
 Example spatial time series (TS) :clock1: data:
 
-> - Consider 1 month of weather stations observations every 10 mins
-
-- Which data structure would you use?
+> * Consider 1 month of weather stations observations every 10 mins
+* Which data structure would you use?
 
 ## 
 
@@ -95,7 +97,7 @@ Example spatial time series (TS) :clock1: data:
 		<td>6.9</td>
 		<td>80.0</td>
 		<td>0.0</td>
-		</tr>
+		</tr>	
 	    <tr>
 		<th>2021-01-31 23:40:00</th>
 		<td>6.1</td>
@@ -123,13 +125,12 @@ Example spatial time series (TS) :clock1: data:
 
 ## Wide data frame {.no-bullet}
 
-> - **Pros**:
-
-- :thumbsup: Efficient TS :clock1: operations on index, e.g., `df.resample`
-- **Cons**:
-  - :thumbsdown:Requires **aligned** TS :clock1:
-  - :thumbsdown:Cannot add station attributes, e.g., "geometry" :earth_africa: column
-- Alternatives?
+> * **Pros**: 
+  * :thumbsup: Efficient TS :clock1: operations on index, e.g., `df.resample`
+* **Cons**:  
+  * :thumbsdown:Requires **aligned** TS :clock1:
+  * :thumbsdown:Cannot add station attributes, e.g., "geometry" :earth_africa: column
+* Alternatives?
 
 ## Long data frame
 
@@ -228,19 +229,17 @@ Example spatial time series (TS) :clock1: data:
 
 ## Long data frame {.no-bullet}
 
-> - **Pros**:
->   \* :thumbsup: Flexible for **unaligned** TS :clock1:
-
-- **Cons**:
-  - :thumbsdown:TS :clock1: operations require a *groupby* approach
-  - :thumbsdown: station attributes, e.g., "geometry" :earth_africa: column would result in many repeated values
-- Alternatives?
+> * **Pros**: 
+     * :thumbsup: Flexible for **unaligned** TS :clock1:
+* **Cons**:
+     * :thumbsdown:TS :clock1: operations require a *groupby* approach
+     * :thumbsdown: station attributes, e.g., "geometry" :earth_africa: column would result in many repeated values
+* Alternatives?
 
 ## Combine two objects
 
-> - A wide time series data frame
-
-- A station attributes data frame/series, e.g., "geometry" :earth_africa:
+> * A wide time series data frame
+* A station attributes data frame/series, e.g., "geometry" :earth_africa:
 
 ## Vector data cubes: xvec
 
@@ -260,24 +259,24 @@ ds.xvec.query("station", query_geom)
 
 ## Vector data cubes: xvec {.no-bullet}
 
-> - **Pros**:
+> * **Pros**: 
+  * :thumbsup: Efficient TS :clock1: operations on time index, e.g., `ds.resample`
+  * :thumbsup: Efficient spatial :earth_africa: operations on spatial index
+* **Cons**:  
+  * Requires **aligned** TS :clock1:
+  * How to store to disk :floppy_disk:? [<i class="fa fa-github"></i> xvec/issues/26](https://github.com/xarray-contrib/xvec/issues/26)
+  * **pickle**, **joblib**: Python only.
+  * **GIS formats**: pros and cons of wide/long tables.
 
-- :thumbsup: Efficient TS :clock1: operations on time index, e.g., `ds.resample`
-- :thumbsup: Efficient spatial :earth_africa: operations on spatial index
-- **Cons**:
-  - Requires **aligned** TS :clock1:
-  - How to store to disk :floppy_disk:? [<i class="fa fa-github"></i> xvec/issues/26](https://github.com/xarray-contrib/xvec/issues/26)
-  - **pickle**, **joblib**: Python only.
-  - **GIS formats**: pros and cons of wide/long tables.
 
 ## Summary
 
 We could not find a tool to deal with:
 
-> - unaligned time series
+> * unaligned time series
+* reliable disk storage, e.g., long term, cross-platform, cloud optimized...
+* station (sample) attributes, e.g., "geometry" :earth_africa:
 
-- reliable disk storage, e.g., long term, cross-platform, cloud optimized...
-- station (sample) attributes, e.g., "geometry" :earth_africa:
 
 # Proposed solution: Enter TStore
 
@@ -285,13 +284,13 @@ We could not find a tool to deal with:
 
 [<i class="fa fa-github"></i> TStore](https://github.com/ltelab/tstore) is a Python library for flexible storage and processing of (spatial) TS data. Two key features:
 
-> - **TS :clock1: encapsulation**: `TS`, `TSDF`, `TSLong` and `TSWide` objects to organize hetereogeneous (spatial) time series data into Python data frames
-
-- **TS :clock1: storage**: `TStore` is a hierarchically-structured specification to reliably and efficiently store (spatial) TS data based on Parquet (and GeoParquet)
+> * **TS :clock1: encapsulation**: `TS`, `TSDF`, `TSLong` and `TSWide` objects to organize hetereogeneous (spatial) time series data into Python data frames
+* **TS :clock1: storage**: `TStore` is a hierarchically-structured specification to reliably and efficiently store (spatial) TS data based on Parquet (and GeoParquet)
 
 ## Time series encapsulation
 
 Consider a `TS` object representing a time-series. Then the long data frame becomes:
+
 
 <div class="fragment" data-fragment-index="1">
 <table border="1" class="dataframe">
@@ -340,12 +339,11 @@ Consider a `TS` object representing a time-series. Then the long data frame beco
 
 ## Advantages {.no-bullet}
 
-> - **Flexibility**:
+> * **Flexibility**: 
+* :thumbsup: each station can have its own `TS`, e.g., useful with different temporal resolution, periods of maintenance (no data)...
+* :thumbsup: each `TS` object may be *univariate* or *multivariate*
 
-- :thumbsup: each station can have its own `TS`, e.g., useful with different temporal resolution, periods of maintenance (no data)...
-- :thumbsup: each `TS` object may be *univariate* or *multivariate*
-
-## 
+##
 
 <div>
 <table border="1" class="dataframe">
@@ -416,9 +414,8 @@ Consider a `TS` object representing a time-series. Then the long data frame beco
 
 ![](media/tsdf.svg)
 
-> - cells `TS` are pandas `ExtensionDtype`
-
-- columns `TSArray` are pandas `ExtensionArray`
+> * cells `TS` are pandas `ExtensionDtype`
+* columns `TSArray` are pandas `ExtensionArray`
 
 ## Advantages {.img-no-margin .no-bullet}
 
@@ -426,15 +423,15 @@ GeoPandas compatible:
 
 ![](media/geotsdf.svg)
 
-> - No geometries are repeated
+> * No geometries are repeated
 
 ## Time series storage {.no-bullet}
 
-> - **TStore**: hierarchically-structured specification to efficiently store time series using [Apache Parquet](https://parquet.apache.org)
+> * **TStore**: hierarchically-structured specification to efficiently store time series using [Apache Parquet](https://parquet.apache.org)
+* :construction: when geometries are present, use [GeoParquet](https://github.com/opengeospatial/geoparquet)
 
-- :construction: when geometries are present, use [GeoParquet](https://github.com/opengeospatial/geoparquet)
 
-## 
+##
 
 Consider k years of temperature and precipitation data form n stations. Then, the `TStore` looks like:
 
@@ -461,20 +458,19 @@ Consider k years of temperature and precipitation data form n stations. Then, th
 ```
 
 ...
-
+		
 └── <station-id-n>
-├── <temperature>
-│   ├── <year-1>
-│   │   ...
-│   └── <year-k>
-└── <precipitation>
-├── <year-1>
-│   ...
-└── <year-k>
-
-````
+    ├── <temperature>
+    │   ├── <year-1>
+    │   │   ...
+    │   └── <year-k>
+    └── <precipitation>
+        ├── <year-1>
+        │   ...
+        └── <year-k>
+```
 </td>
-</tr>
+</tr> 
 </table>
 </div>
 
@@ -580,9 +576,9 @@ tslong.to_tstore(
     partitioning="year",
     tstore_structure="id-var"
 )
-````
+```
 
-## 
+##
 
 Resulting TStore directory structure:
 
@@ -619,10 +615,10 @@ agrometeo-tstore/
         │   └── part-0.parquet
         └── year=2024/
             └── part-0.parquet
-
+		
 ```
 </td>
-</tr>
+</tr> 
 </table>
 </div>
 
@@ -637,7 +633,7 @@ agrometeo-tstore/
 # Thank you
 
 <div class="thank-you-links">
-Slides: [<i class="fa fa-github"></i> martibosch/tsdf-geopython-2024](https://github.com/martibosch/tsdf-geopython-2024)
+Slides (and notebook): [<i class="fa fa-github"></i> martibosch/tsdf-geopython-2024](https://github.com/martibosch/tsdf-geopython-2024)
 
 Repository: [<i class="fa fa-github"></i> ltelab/tstore](https://github.com/ltelab/tstore)
 </div>
@@ -657,7 +653,7 @@ Repository: [<i class="fa fa-github"></i> ltelab/tstore](https://github.com/ltel
 	    <td>
 			<a href="https://www.epfl.ch" target="_blank">EPFL</a>
 	    </td>
-	</tr>
+	</tr> 
 	<tr>
 	    <td>
 		<img src="media/ceat-logo.png"  alt="CEAT">
@@ -671,7 +667,7 @@ Repository: [<i class="fa fa-github"></i> ltelab/tstore](https://github.com/ltel
 	    <td>
 		<img src="media/epfl-logo.png"  alt="EPFL">
 	    </td>
-	</tr>
+	</tr> 
 </table>
 </div>
 
@@ -679,4 +675,3 @@ Repository: [<i class="fa fa-github"></i> ltelab/tstore](https://github.com/ltel
 # Footnotes
 
 1. <span id="agrometeo"></span> Data from Agrometeo belongs to the Swiss Federal Administration, see [the terms and conditions](https://www.admin.ch/gov/en/start/terms-and-conditions.html) for more information.
-```

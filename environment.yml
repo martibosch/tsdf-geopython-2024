@@ -1,0 +1,16 @@
+name: tstore
+channels:
+- conda-forge
+dependencies:
+- contextily
+- pandas
+- geopandas
+- pip
+- python=3.12
+- pip:
+  - git+ssh://git@github.com/ltelab/tstore.git
+  - git+ssh://git@github.com/martibosch/meteostations-geopy.git@9931f0b9bd822a3720703b33879339d865fab91c#egg=meteostations_geopy
+- seaborn
+- tqdm
+- xarray
+- xvec
