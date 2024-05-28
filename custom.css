@@ -1,5 +1,40 @@
 #title-slide > h1 {
-    font-size: 1.5em
+    font-size: 1.2em;
+    padding-bottom: 2em
+}
+
+#title-slide > p.author {
+    padding-bottom: 1em
+}
+
+#title-slide > p.date {
+    font-size: .9em;
+    background-image: url(media/epfl-logo.png);
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 180px, 180px;
+    text-align: left
+}
+
+#title-slide > p.date > em {
+    font-size: .7em;
+}
+
+.no-bullet ul {
+    list-style-type: none
+}
+
+.code-mb-0 .sourceCode {
+    margin-bottom: 0
+}
+
+.img-no-margin img {
+    margin: 0
+}
+
+table.tstore-table {
+    font-size: .8em;
+    width: 90%
 }
 
 table.logo-table {
@@ -13,13 +48,8 @@ table.logo-table td {
     width: 25%	
 }
 
-.img-no-margin img {
-    margin: 0
-}
-
-.github-link {
-    font-size: 1.5em;
-    padding: 1em 0
+.thank-you-links {
+    padding: 1.5em 0
 }
 
 /* dataframes */
@@ -42,10 +72,6 @@ table.logo-table td {
 
 .dataframe thead tr:last-of-type th {
     text-align: right
-}
-
-.no-bullet ul {
-    list-style-type: none
 }
 
 /* xarray */

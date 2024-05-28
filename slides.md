@@ -1,13 +1,13 @@
 ---
-title: "TSDF - Data storage for scalable processing of heterogeneous and geospatial time series"
-author: Martí Bosch, with Gionata Ghiggi, Son Pham-Ba and Charlotte Weil
-date: May 28, 2024
+title: TSDF - Data storage for scalable processing of heterogeneous and geospatial time series
+author: Martí Bosch (CEAT); Gionata Ghiggi (LTE); Son Pham-Ba and Charlotte Weil (ENAC-IT4R)
+date: May 28, 2024. <br /> *Funded by the ETH Domain Open Research Data (ORD) Program*
 theme: black
 ---
 
-# (spatial) Time series data
+# Motivation: dealing with (spatial) Time series data
 
-## Motivation
+## 
 
 Example spatial time series (TS) :clock1: data:
 
@@ -23,7 +23,7 @@ Example spatial time series (TS) :clock1: data:
 		<th>station</th>
 		<th colspan="3" halign="left">1</th>
 		<th>...</th>
-		<th colspan="3" halign="left">305</th>
+		<th colspan="3" halign="left">33</th>
 	    </tr>
 	    <tr>
 		<th>variable</th>
@@ -129,7 +129,7 @@ Example spatial time series (TS) :clock1: data:
   * :thumbsup: Efficient TS :clock1: operations on index, e.g., `df.resample`
 * **Cons**:  
   * :thumbsdown:Requires **aligned** TS :clock1:
-  * :thumbsdown:Cannot add "geometry" :earth_africa: column
+  * :thumbsdown:Cannot add station attributes, e.g., "geometry" :earth_africa: column
 * Alternatives?
 
 ## Long data frame
@@ -192,7 +192,7 @@ Example spatial time series (TS) :clock1: data:
       <td>...</td>
     </tr>
     <tr>
-      <th rowspan="5" valign="top">99</th>
+      <th rowspan="5" valign="top">33</th>
       <th>2021-01-31 23:10:00</th>
       <td>5.6</td>
       <td>100.0</td>
@@ -233,17 +233,25 @@ Example spatial time series (TS) :clock1: data:
      * :thumbsup: Flexible for **unaligned** TS :clock1:
 * **Cons**:
      * :thumbsdown:TS :clock1: operations require a *groupby* approach
-     * :thumbsdown:"geometry" :earth_africa: column would have many repeated geometries
+     * :thumbsdown: station attributes, e.g., "geometry" :earth_africa: column would result in many repeated values
 * Alternatives?
 
+## Combine two objects
+
+> * A wide time series data frame
+* A station attributes data frame/series, e.g., "geometry" :earth_africa:
+
 ## Vector data cubes: xvec
 
+<div class="fragment" data-fragment-index="1">
 ![xvec dataset](media/ts_ds.png)
+</div>
 
-## Vector data cubes: xvec
+## Vector data cubes: xvec {.code-mb-0}
 
 ```python
 # e.g., stations within 10 km of Lausanne's center
+query_geom = gpd.tools.geocode("Lausanne").to_crs(ds.station.crs).buffer(10e3)
 ds.xvec.query("station", query_geom)
 ```
 
@@ -257,11 +265,27 @@ ds.xvec.query("station", query_geom)
 * **Cons**:  
   * Requires **aligned** TS :clock1:
   * How to store to disk :floppy_disk:? [<i class="fa fa-github"></i> xvec/issues/26](https://github.com/xarray-contrib/xvec/issues/26)
-  * - **pickle**, **joblib**: Python only.
-  * - **GIS formats**: pros and cons of wide/long tables.
+  * **pickle**, **joblib**: Python only.
+  * **GIS formats**: pros and cons of wide/long tables.
 
 
-# Enter tstore
+## Summary
+
+We could not find a tool to deal with:
+
+> * unaligned time series
+* reliable disk storage, e.g., long term, cross-platform, cloud optimized...
+* station (sample) attributes, e.g., "geometry" :earth_africa:
+
+
+# Proposed solution: Enter TStore
+
+## What is TStore
+
+[<i class="fa fa-github"></i> TStore](https://github.com/ltelab/tstore) is a Python library for flexible storage and processing of (spatial) TS data. Two key features:
+
+> * **TS :clock1: encapsulation**: `TS`, `TSDF`, `TSLong` and `TSWide` objects to organize hetereogeneous (spatial) time series data into Python data frames
+* **TS :clock1: storage**: `TStore` is a hierarchically-structured specification to reliably and efficiently store (spatial) TS data based on Parquet (and GeoParquet)
 
 ## Time series encapsulation
 
@@ -286,11 +310,11 @@ Consider a `TS` object representing a time-series. Then the long data frame beco
       <td>TS[shape=(4464, 3),start=2021-01-01 00:00:00,e...</td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>2</th>
       <td>TS[shape=(4464, 3),start=2021-01-01 00:00:00,e...</td>
     </tr>
     <tr>
-      <th>13</th>
+      <th>3</th>
       <td>TS[shape=(4464, 3),start=2021-01-01 00:00:00,e...</td>
     </tr>
     <tr>
@@ -298,15 +322,15 @@ Consider a `TS` object representing a time-series. Then the long data frame beco
       <td>...</td>
     </tr>
     <tr>
-      <th>97</th>
+      <th>31</th>
       <td>TS[shape=(4464, 3),start=2021-01-01 00:00:00,e...</td>
     </tr>
     <tr>
-      <th>98</th>
+      <th>32</th>
       <td>TS[shape=(4464, 3),start=2021-01-01 00:00:00,e...</td>
     </tr>
     <tr>
-      <th>99</th>
+      <th>33</th>
       <td>TS[shape=(4464, 3),start=2021-01-01 00:00:00,e...</td>
     </tr>
   </tbody>
@@ -345,13 +369,13 @@ Consider a `TS` object representing a time-series. Then the long data frame beco
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>2</th>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
     </tr>
     <tr>
-      <th>13</th>
+      <th>3</th>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
@@ -363,19 +387,19 @@ Consider a `TS` object representing a time-series. Then the long data frame beco
       <td>...</td>
     </tr>
     <tr>
-      <th>97</th>
+      <th>31</th>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
     </tr>
     <tr>
-      <th>98</th>
+      <th>32</th>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
     </tr>
     <tr>
-      <th>99</th>
+      <th>33</th>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
       <td>TS[shape=(4464,),start=2021-01-01 00:00:00,end...</td>
@@ -412,7 +436,7 @@ GeoPandas compatible:
 Consider k years of temperature and precipitation data form n stations. Then, the `TStore` looks like:
 
 <div>
-<table class="logo-table">
+<table class="tstore-table">
 <tr>
 <td>
 ```
@@ -452,20 +476,22 @@ Consider k years of temperature and precipitation data form n stations. Then, th
 
 ## Flexibility of TStore {.no-bullet}
 
-We can use a different...
+We can ...
 
-> * temporal partitioning, e.g., by month
-* TStore strucutre, e.g., "variable-station" instead of "station-variable"
+> * have multiple temporal partitioning, e.g., by month, year/month...
+* TStore structure, e.g., "variable-station" instead of "station-variable"
 
 ## Advantages {.no-bullet}
 
-> * `TS` objects are loaded using Apache Arrow, so they can be *zero-copy* transformed into pandas or polars dataframes.
+> * `TS` objects are loaded into the Apache Arrow memory format
+* :arrow_right: *zero-copy* conversion to pandas or polars dataframes.
 
 ## Example {.no-bullet}
 
 5 years of 10 min observations from the 33 Agrometeo stations[<sup>1</sup>](#agrometeo) in the Canton of Vaud, Switzerland:
 
-<div>
+
+<div class="fragment" data-fragment-index="1">
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -540,21 +566,15 @@ We can use a different...
 import tstore
 
 tstore_dir = "agrometeo-tstore"
-id_var = "station"
-time_var = "time"
-partitioning = "year"
-tstore_structure = "id-var"
+variables =...
 
-tslong = tstore.TSLong(long_ts_df.reset_index())
+tslong = tstore.TSLong(long_ts_df)
 tslong.to_tstore(
     tstore_dir,
-    # DFLONG attributes
-    id_var,
-    time_var,
     variables,
     # TSTORE options
-    partitioning=partitioning,
-    tstore_structure=tstore_structure,
+    partitioning="year",
+    tstore_structure="id-var"
 )
 ```
 
@@ -562,19 +582,45 @@ tslong.to_tstore(
 
 Resulting TStore directory structure:
 
+<div>
+<table class="tstore-table">
+<tr>
+<td>
 ```
-agrometeo-tstore/tstore_metadata.yaml
-agrometeo-tstore/_attributes.parquet
-agrometeo-tstore/96/temperature/_common_metadata
-agrometeo-tstore/96/temperature/_metadata
-agrometeo-tstore/96/temperature/year=2020/part-0.parquet
+agrometeo-tstore/
+├── tstore_metadata.yaml
+├── _attributes.parquet
+├── 96/
+│   └── temperature/
+│       ├── _common_metadata
+│       ├── _metadata
+│       └── year=2020/
+│           └── part-0.parquet
+│       └── ...
 ...
-agrometeo-tstore/27/precipitation/year=2021/part-0.parquet
-agrometeo-tstore/27/precipitation/year=2019/part-0.parquet
-agrometeo-tstore/27/precipitation/year=2022/part-0.parquet
-agrometeo-tstore/27/precipitation/year=2023/part-0.parquet
-agrometeo-tstore/27/precipitation/year=2024/part-0.parquet
 ```
+</td>
+<td>
+```
+...
+└── 27/
+    └── precipitation/
+        ├── year=2019/
+        │   └── part-0.parquet
+        ├── year=2021/
+        │   └── part-0.parquet
+        ├── year=2022/
+        │   └── part-0.parquet
+        ├── year=2023/
+        │   └── part-0.parquet
+        └── year=2024/
+            └── part-0.parquet
+		
+```
+</td>
+</tr> 
+</table>
+</div>
 
 ## Some stats {.no-bullet}
 
@@ -586,8 +632,10 @@ agrometeo-tstore/27/precipitation/year=2024/part-0.parquet
 
 # Thank you
 
-<div class="github-link">
-[<i class="fa fa-github"></i> ltelab/tstore](https://github.com/ltelab/tstore)
+<div class="thank-you-links">
+Slides: [<i class="fa fa-github"></i> martibosch/tsdf-geopython-2024](https://github.com/martibosch/tsdf-geopython-2024)
+
+Repository: [<i class="fa fa-github"></i> ltelab/tstore](https://github.com/ltelab/tstore)
 </div>
 
 <div>
