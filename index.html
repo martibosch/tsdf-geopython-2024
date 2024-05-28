@@ -19,14 +19,19 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
     ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span { line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -37,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -88,7 +93,6 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.0.0/dist/theme/black.css" id="theme">
   <link rel="stylesheet" href="custom.css"/>
@@ -705,7 +709,7 @@ frames</li>
 <li class="fragment"><strong>TS <span class="emoji"
 data-emoji="clock1">🕐</span> storage</strong>: <code>TStore</code> is a
 hierarchically-structured specification to reliably and efficiently
-store (spatial) TS data based on Parquet (and GeoParquet).</li>
+store (spatial) TS data based on Parquet (and GeoParquet)</li>
 </ul>
 </section>
 <section id="time-series-encapsulation" class="slide level2">
@@ -990,7 +994,7 @@ stations. Then, the <code>TStore</code> looks like:</p>
 <td>
 <pre><code>
 ...
-
+        
 └── &lt;station-id-n&gt;
     ├── &lt;temperature&gt;
     │   ├── &lt;year-1&gt;
@@ -1010,7 +1014,7 @@ stations. Then, the <code>TStore</code> looks like:</p>
 <p>We can …</p>
 <ul>
 <li class="fragment">have multiple temporal partitioning, e.g., by
-month, year/month…</li>
+month, year/month…, different partitioning by variable…</li>
 <li class="fragment">TStore structure, e.g., “variable-station” instead
 of “station-variable”</li>
 </ul>
@@ -1237,41 +1241,32 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a hr
 </section>
 <section id="some-stats" class="slide level2 no-bullet">
 <h2 class="no-bullet">Some stats</h2>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th>write [s]</th>
-<th>read [s]</th>
-<th>size [MB]</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>CSV</td>
-<td>116.4</td>
-<td>8.96</td>
-<td>310.5</td>
-</tr>
-<tr class="even">
-<td>TStore, snappy</td>
-<td>6.1</td>
-<td>22.2</td>
-<td>249.9</td>
-</tr>
-<tr class="odd">
-<td>TStore, gzip</td>
-<td>12.9</td>
-<td>21.6</td>
-<td>194.4</td>
-</tr>
-</tbody>
-</table>
+<ul>
+<li class="fragment"><strong>CSV</strong>: write in 133 s, file size
+310.5 MB, read in 7.9 s</li>
+<li class="fragment"><strong>TStore</strong>: write in 4.6 s <span
+class="emoji" data-emoji="rocket">🚀</span>, file size 249.9 MB (snappy
+compression, with 194.4 MB). Reading:</li>
+<li class="fragment"><em>whole TStore into long data frame</em>: 23
+s</li>
+<li class="fragment"><em>single variable</em>: 2.28 s</li>
+<li class="fragment"><em>single variable, single station</em>: 0.03 s
+<span class="emoji" data-emoji="rocket">🚀</span></li>
+</ul>
+</section>
+<section id="roadmap" class="slide level2">
+<h2>Roadmap</h2>
+<ul>
+<li class="fragment">geopandas and geoparquet support</li>
+<li class="fragment">time filters to read only the required data</li>
+<li class="fragment">implement more advanced TS/spatial operations,
+e.g., groupby/apply, regularize, resampling, rolling window…</li>
+</ul>
 </section></section>
 <section id="thank-you" class="title-slide slide level1">
 <h1>Thank you</h1>
 <div class="thank-you-links">
-<p>Slides: <a
+<p>Slides (and notebook): <a
 href="https://github.com/martibosch/tsdf-geopython-2024"><i class="fa fa-github"></i>
 martibosch/tsdf-geopython-2024</a></p>
 <p>Repository: <a

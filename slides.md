@@ -624,11 +624,17 @@ agrometeo-tstore/
 
 ## Some stats {.no-bullet}
 
-|                | write [s] | read [s] | size [MB] |
-|----------------|-----------|----------|-----------|
-| CSV            | 116.4     | 8.96     | 310.5     |
-| TStore, snappy | 6.1       | 22.2     | 249.9     |
-| TStore, gzip   | 12.9      | 21.6     | 194.4     |
+> * **CSV**: write in 133 s, file size 310.5 MB, read in 7.9 s
+* **TStore**: write in 4.6 s :rocket:, file size 249.9 MB (snappy compression, with 194.4 MB). Reading:
+* *whole TStore into long data frame*: 23 s
+* *single variable*: 2.28 s
+* *single variable, single station*: 0.03 s :rocket:
+
+## Roadmap
+
+> * geopandas and geoparquet support
+* time filters to read only the required data
+* implement more advanced TS/spatial operations, e.g., groupby/apply, regularize, resampling, rolling window...
 
 # Thank you
 
